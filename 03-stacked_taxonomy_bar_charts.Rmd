@@ -99,7 +99,7 @@ taxa=read.table(file = glue("{path}/rarefied_taxa_bac.csv"), sep=",", row.names=
 meta=read.table(file = glue("{path}/rarefied_meta_bac.csv"), sep=",", row.names=1, header=TRUE)
 ```
 
-```{r, echo=FALSE, cache=TRUE}
+```{r, echo=FALSE, cache=TRUE, eval=FALSE}
 #Remove unwanted sample and column from the sample metadata file 
 meta=subset(meta, !Sample_type=='Peatbog') # Remove sample from the peatbog
 meta=subset(meta, select=-c(is.neg))
@@ -108,6 +108,7 @@ meta$position_pastille[meta$Sample_type == "Groundwater"] <- NA
 
 Below is a preview of these three table. 
 ```{r, echo=FALSE, cache=TRUE}
+library(DT)
 datatable(head(asv[1:6,6:9]), caption="ASV table", options=list(scrollX=T, dom = 't', paging=FALSE, ordering=FALSE,
                                                             initComplete = JS("function(settings, json) {",
                                                                               "$(this.api().table().header()).css({'font-size': '12px'});",
@@ -127,7 +128,7 @@ datatable(meta, caption="Sample metadata table", options=list(dom = 'tip', pageL
 ## Defining taxonomic rank
 
 This is were we define which taxonomy rank we want to show in our figures. In this example we want to display the relative abundance of taxon at the genus level. 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 taxa_rank="Genus"
 ```
 
@@ -143,7 +144,7 @@ Getting your data ready for the analysis may not be the longest and most complex
 
 In our case, we first had to generate new columns in the sample metadata table with some crucial information (**experience #**, **time**, **bioreactor #**, and **replicate #**) which were only defined in the sample names. This first chunk of code was therefore used to extract the **"row.names**" from the `meta` dataframe into a new column named **"sample_name"**, which is then split into five new columns using the hyphen (-) as separator. The last three lines of code were used to replace certain abbreviation and words in order to improve the quality and readability of the final figures. 
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 # Create new column called sample_name from the row.name
 meta$sample_name=row.names(meta) 
 # Separate column sample_name based on hyphen into five new columns 
@@ -195,7 +196,7 @@ Therefore, as iterator, we created a new column called **experience_sample** com
 - if value from the column **experience** = *Experience 2* and **Sample_type** = *Rock*, then populate column **time_replicate**  with the value from the column **time** followed by the string "*R.*" (for replicate) and value from the column **replicate** ; 
 - for all other cases (else), simply populate the column **time_replicate** with values from the column **time**. 
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 # Creating new column for our iterator by combining experience # and sample type 
 meta$experience_sample=paste(meta$experience,"-",meta$Sample_type)
 
@@ -211,6 +212,7 @@ meta=subset(meta, select=-c(position_pastille, temp, ph, do_percent, dic, doc, s
 
 This is now the look of our sample metadata table :
 ```{r, echo=FALSE, cache=TRUE}
+library(DT)
 datatable(meta, options=list(dom = 'tip', pageLength=5,autoWidth = TRUE,columnDefs=list(list(width="50%", targets=0)),
                                                               initComplete = JS("function(settings, json) {",
                                                                               "$(this.api().table().header()).css({'font-size': '12px'});",
@@ -221,7 +223,7 @@ datatable(meta, options=list(dom = 'tip', pageLength=5,autoWidth = TRUE,columnDe
 ## Combine and melt dataframes
 We now want to combine into one single dataframe the abundance of the different ASV, the taxonomy assigned to each ASV, and our cleaned up sample metadata dataframe. 
 For this we are using the package and function `phyloseq` before melting our dataframe to what we call long format.
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 # Merge into phyloseq object
 ps=phyloseq(otu_table(asv, taxa_are_rows=TRUE), tax_table(as.matrix(taxa)), sample_data(meta))
 # Get abundance in %
@@ -233,6 +235,7 @@ melted_df=psmelt(glom)
 ```
 The look of the melted dataframe : 
 ```{r, echo=FALSE, warning=FALSE, cache=TRUE}
+library(DT)
 datatable(melted_df,rownames = FALSE, options=list(dom = 'tip', scrollX=T, pageLength=5,autoWidth = TRUE,
                              initComplete = JS("function(settings, json) {",
                                                "$(this.api().table().header()).css({'font-size': '12px'});",
@@ -270,7 +273,7 @@ names(unique_taxon)[names(unique_taxon)==name]=as.character(taxa_rank) # Rename 
 
 We are now generating a new set of random unique colors and assigning a specific color to each taxa from our list of most abundant taxa. We are also using the *markdown syntax* to italicize the taxa name in both the legend and dataframe. 
 **If you wish to use a previously saved color palette do not run the following chunk of code and jump to section [Saving and loading color range]**
-```{r, eval=FALSE, cache=TRUE}
+```{r, eval=FALSE, cache=TRUE, eval=FALSE}
 # get the total number of unique most abundant taxa 
 n=nrow(unique_taxon) 
 # generate a set of X unique colors corresponding to the number of unique taxa

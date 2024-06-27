@@ -50,6 +50,8 @@ keepTaxa = (x / sum(x)) > minTotRelAbun
 prunedSet = prune_taxa(keepTaxa, ps)
 # View how many taxa were removed by sample 
 loss_taxa=data.frame(sample_sums(prunedSet), sample_sums(ps), (sample_sums(prunedSet)-sample_sums(ps)))
+
+# Remove samples with 0 sequences ! 
 ```
 
 ## Generate rarefaction curve 
